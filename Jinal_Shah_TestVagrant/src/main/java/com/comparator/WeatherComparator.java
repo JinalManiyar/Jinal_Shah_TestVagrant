@@ -1,41 +1,49 @@
 package com.comparator;
 
+import com.comparator.APIDataExtractor.ExtractAPIData;
+import com.comparator.UIDataExtractor.ExtractUIData;
+import com.comparator.UIDataExtractor.ValidateCityAndTemp;
+import com.comparator.Util.CompareAttributes;
 import com.comparator.Util.DataReader;
+import com.comparator.Util.GetWebDriver;
+import io.restassured.response.Response;
+import org.openqa.selenium.WebDriver;
 
 import static java.lang.Math.abs;
 
 public class WeatherComparator {
+    String cityName;
+    WebDriver driver;
+    Float uiTemp,uiHumidity,apiTemp,apiHumidity;
 
-    private final int PERCENT = 100;
-    private DataReader dataReader = new DataReader();
-
-    public boolean compareTemperature(float uiTemp, float apiTemp){
-        //get temperature variance value from user
-        float tempVariance = dataReader.getTempVariance();
-
-        //use abs to take care of negative values
-        if(abs(uiTemp - apiTemp) <= tempVariance) {
-            System.out.println("Temperature matches");
-            System.out.println();
-            return true;
-        } else {
-            System.out.println("Temperature doesn't match");
-            System.out.println();
-            return false;
-        }
+    public void init() throws InterruptedException {
+        cityName = DataReader.getCityName();
+        driver = GetWebDriver.getDriverDetails();
     }
 
-    public boolean compareHumidity(float uiHumidity, float apiHumidity){
-        float humidityVariance = dataReader.getHumidityVariance();
+    public void execute() {
 
-        if ((abs(uiHumidity - apiHumidity)) / PERCENT <= humidityVariance /PERCENT) {
-            System.out.println("Humidity matches");
-            System.out.println();
-            return true;
-        } else {
-            System.out.println("Humidity doesn't match");
-            System.out.println();
-            return false;
+        ValidateCityAndTemp validateCityAndTemp = new ValidateCityAndTemp(cityName,driver);
+        ExtractUIData extractUIData = new ExtractUIData(cityName,driver);
+        ExtractAPIData extractAPIData = new ExtractAPIData(cityName);
+        CompareAttributes compareAttributes = new CompareAttributes();
+
+        if(validateCityAndTemp.validateCityAndTemp()) {
+            uiTemp = extractUIData.getTempValue();
+            uiHumidity = extractUIData.getHumidity();
+
+            Response response = extractAPIData.queryParameter();
+            apiTemp = extractAPIData.getTempValue(response);
+            apiHumidity = extractAPIData.getHumidityValue(response);
+
+            driver.quit();
+
+            compareAttributes.compareTemperature(uiTemp, apiTemp);
+            compareAttributes.compareHumidity(uiHumidity, apiHumidity);
+        }
+        else {
+            System.out.println("City name is not valid");
+            driver.quit();
         }
     }
 }

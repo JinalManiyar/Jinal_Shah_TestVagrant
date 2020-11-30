@@ -8,16 +8,20 @@ import static io.restassured.RestAssured.given;
 
 public class ExtractAPIData {
 
-    private static float KELVIN_TO_CELSIUS = 273.15F;
-    public Response queryParameter(String cityName) {
+
+    private final String cityName;
+
+    public ExtractAPIData(String cityName) {
+        this.cityName = cityName;
+    }
+
+    public Response queryParameter() {
 
         RestAssured.baseURI = "http://api.openweathermap.org/data/2.5";
         RequestSpecification request = given();
 
-        Response response = request.queryParam("q", cityName)
+        return request.queryParam("q", cityName)
                 .queryParam("appid", "7fe67bf08c80ded756e598d6f8fedaea").get("/weather");
-
-        return response;
     }
 
     public Float getHumidityValue(Response response) {
@@ -25,12 +29,14 @@ public class ExtractAPIData {
     }
 
     public Float getTempValue(Response response) {
+
         //extract temperature value from response by giving path
         Float tempKValue = extractValue(response, "main.temp");
+
         //Convert temperature from kelvin to celsius
-        Float tempValue = tempKValue - KELVIN_TO_CELSIUS;
-        Float tempCValue = Math.round(tempValue*100.0)/100.0F;
-        return tempCValue;
+        float KELVIN_TO_CELSIUS = 273.15F;
+        float tempValue = tempKValue - KELVIN_TO_CELSIUS;
+        return Math.round(tempValue*100.0)/100.0F;
     }
 
     private Float extractValue(Response response, String path) {

@@ -5,8 +5,8 @@ import java.util.Scanner;
 import static java.lang.StrictMath.abs;
 
 public class DataReader {
-    Scanner sc = new Scanner(System.in);
-    public String getCityName() {
+    static Scanner sc = new Scanner(System.in);
+    public static String getCityName() {
         System.out.print("Enter city name: ");
         if(sc.hasNext()){
             // convert city name in the format of 1st letter capital word regardless of how user entered it
@@ -19,14 +19,14 @@ public class DataReader {
         }
      return null;
     }
-    public float getTempVariance() {
+    public static float getTempVariance() {
         System.out.print("Enter temperature Variance: ");
         String tempValue = sc.next();
         float tempVariance = Float.parseFloat(tempValue);
         return (abs(tempVariance));
     }
 
-    public float getHumidityVariance() {
+    public static float getHumidityVariance() {
         System.out.print("Enter humidity Variance: ");
         String humidityValue = sc.next();
         float humidityVariance = Float.parseFloat(humidityValue);
