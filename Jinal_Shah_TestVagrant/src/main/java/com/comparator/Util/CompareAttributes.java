@@ -4,7 +4,6 @@ import static java.lang.Math.abs;
 
 public class CompareAttributes {
 
-
     public void compareTemperature(float uiTemp, float apiTemp){
 
         float tempVariance = DataReader.getTempVariance();

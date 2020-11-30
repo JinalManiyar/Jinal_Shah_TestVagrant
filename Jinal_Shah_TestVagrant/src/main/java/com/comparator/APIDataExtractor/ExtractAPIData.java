@@ -8,7 +8,6 @@ import static io.restassured.RestAssured.given;
 
 public class ExtractAPIData {
 
-
     private final String cityName;
 
     public ExtractAPIData(String cityName) {
